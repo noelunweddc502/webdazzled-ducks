@@ -177,6 +177,17 @@ nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:8px 16px calc
 .tab.active .ic{filter:none}
 .tab.fab .ic{width:60px;height:60px;border-radius:20px;display:grid;place-items:center;font-size:28px;margin-top:-26px;filter:none;
   background:linear-gradient(135deg,var(--pink),var(--beak));box-shadow:0 8px 22px rgba(255,62,165,.55);border:3px solid var(--bg)}
+.tw{position:relative}
+.del{position:absolute;top:8px;right:8px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;font-size:18px;
+  background:rgba(220,30,60,.92);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.4);display:grid;place-items:center}
+.del[disabled]{opacity:.5}
+.adminbar{display:none;align-items:center;justify-content:space-between;gap:8px;margin:8px 0;padding:10px 12px;border-radius:14px;font-size:13px;font-weight:800;
+  background:rgba(220,30,60,.15);border:1px solid rgba(255,90,110,.45);color:#ffc2cb}
+body.admin .adminbar{display:flex}
+.adminbar button{font:inherit;font-size:12px;border:0;border-radius:999px;padding:7px 11px;background:#fff;color:#7a1024;cursor:pointer}
+.lbdel{display:none;margin:0 16px 16px;width:calc(100% - 32px)}
+body.admin .lbdel{display:flex}
+.btn.danger{background:linear-gradient(135deg,#e0213f,#ff5a3c);box-shadow:0 8px 20px rgba(224,33,63,.35)}
 footer{text-align:center;font-size:12px;color:var(--muted);margin:22px 0 6px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
@@ -287,15 +298,36 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin:22px 0 6px}
     </div>
   </section>
 
+  <!-- WEBERS (hidden admin) -->
+  <section class="view" id="view-webers" aria-labelledby="h-web">
+    <div class="card">
+      <h2 id="h-web">🔐 Webers only</h2>
+      <p class="note" id="webStatus">Turn on delete mode for this phone. Your key stays on this phone only and is never put on the website.</p>
+      <div class="banner err" id="webErr"></div>
+      <div id="webForm">
+        <label class="f" for="apiKey">Cloudinary API Key</label>
+        <input class="t" id="apiKey" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <label class="f" for="apiSecret">Cloudinary API Secret</label>
+        <input class="t" id="apiSecret" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="cta-wrap"><button class="btn" id="webSave" type="button">Turn on delete mode</button></div>
+      </div>
+      <div id="webOn" hidden>
+        <div class="cta-wrap"><button class="btn" type="button" data-go="gallery">Go to the gallery</button></div>
+        <button class="btn ghost" id="webOff" type="button">Turn off on this phone</button>
+      </div>
+    </div>
+  </section>
+
   <!-- GALLERY -->
   <section class="view" id="view-gallery" aria-labelledby="h-gal">
     <div class="gal-head"><h1 id="h-gal">The Flock</h1><span class="note" id="galCount"></span></div>
     <p class="note">Every sparkly sighting from around the ship.</p>
+    <div class="adminbar">🔐 Webers mode: tap 🗑️ to remove a photo <button type="button" data-go="webers">Settings</button></div>
     <div class="grid" id="grid"></div>
   </section>
 </main>
 
-<dialog id="lb"><div class="lb" style="position:relative"><button class="x" aria-label="Close" onclick="document.getElementById('lb').close()">✕</button><img id="lbImg" alt=""><div class="meta"><b id="lbTitle"></b><p id="lbText"></p></div></div></dialog>
+<dialog id="lb"><div class="lb" style="position:relative"><button class="x" aria-label="Close" onclick="document.getElementById('lb').close()">✕</button><img id="lbImg" alt=""><div class="meta"><b id="lbTitle"></b><p id="lbText"></p></div><button class="btn danger lbdel" id="lbDel" type="button">🗑️ Delete this photo</button></div></dialog>
 
 <nav class="tabs" aria-label="Main">
   <div class="tabs-in">
@@ -324,6 +356,7 @@ function go(v){
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.go===v));
   window.scrollTo({top:0,behavior:'smooth'});
   if(v==='gallery') loadGallery();
+  if(v==='webers') renderWebers();
   if(location.hash!=='#'+v) history.replaceState(null,'','#'+v);
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go);}});
@@ -452,10 +485,15 @@ async function loadGallery(){
       const im=document.createElement('img');im.loading='lazy';im.src=imgUrl(r,500);im.alt='Duck sighting photo';
       const cap=document.createElement('div');cap.className='cap';cap.textContent=caption(c);
       if(c.spot){const s=document.createElement('small');s.textContent='📍 '+c.spot;cap.appendChild(s);}
-      b.append(im,cap);b.onclick=()=>openLb(r);g.appendChild(b);});
+      b.append(im,cap);b.onclick=()=>openLb(r);
+      const w=document.createElement('div');w.className='tw';w.appendChild(b);
+      if(isAdmin()){const d=document.createElement('button');d.type='button';d.className='del';d.textContent='🗑️';d.setAttribute('aria-label','Delete this photo');
+        d.onclick=e=>{e.stopPropagation();deletePhoto(r,d);};w.appendChild(d);}
+      g.appendChild(w);});
   }catch{g.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="big">📶</div><p>Can\'t reach the gallery right now. Check your connection and try again.</p></div>';}
 }
-function openLb(r){const c=ctx(r);
+let lbCurrent=null;
+function openLb(r){lbCurrent=r;const c=ctx(r);
   document.getElementById('lbImg').src=fullUrl(r);
   document.getElementById('lbTitle').textContent=caption(c);
   document.getElementById('lbText').textContent=[c.spot&&('📍 '+c.spot),c.keephide&&('🦆 '+c.keephide),c.msg&&('"'+c.msg+'"')].filter(Boolean).join('  ·  ');
@@ -469,9 +507,56 @@ async function loadRecent(){
     document.getElementById('recentCard').hidden=false;}catch{}
 }
 
+// ---------- Webers-only delete mode (key lives only in this phone's storage) ----------
+const ADMIN_KEY='wd-admin';
+function getCreds(){try{const j=JSON.parse(localStorage.getItem(ADMIN_KEY)||'null');return j&&j.k&&j.s?j:null;}catch{return null;}}
+function isAdmin(){return !!getCreds();}
+function syncAdmin(){document.body.classList.toggle('admin',isAdmin());}
+async function sha1(t){const b=await crypto.subtle.digest('SHA-1',new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+async function destroy(publicId,creds){
+  const ts=Math.floor(Date.now()/1000);
+  const sig=await sha1(`invalidate=true&public_id=${publicId}&timestamp=${ts}${creds.s}`);
+  const fd=new FormData();fd.append('public_id',publicId);fd.append('invalidate','true');fd.append('timestamp',ts);fd.append('api_key',creds.k);fd.append('signature',sig);
+  const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/destroy`,{method:'POST',body:fd});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok) throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
+  return j.result; // "ok" or "not found"
+}
+async function deletePhoto(r,btn){
+  const c=getCreds();if(!c)return;
+  if(!confirm(`Delete this photo${ctx(r).finder?' from '+ctx(r).finder:''}? This can't be undone.`))return;
+  if(btn)btn.disabled=true;
+  try{await destroy(r.public_id,c);
+    if(galleryCache)galleryCache=galleryCache.filter(x=>x.public_id!==r.public_id);
+    const lb=document.getElementById('lb');if(lb.open)lb.close();
+    renderFromCache();
+  }catch(e){if(btn)btn.disabled=false;alert("Couldn't delete: "+e.message);}
+}
+function renderFromCache(){loadGallery();const keep=galleryCache;
+  document.getElementById('countPill').textContent=keep&&keep.length?`✨ ${keep.length} found`:'✨ The flock';}
+document.getElementById('lbDel').onclick=()=>{if(lbCurrent)deletePhoto(lbCurrent,document.getElementById('lbDel'));};
+function renderWebers(){const on=isAdmin();
+  document.getElementById('webForm').hidden=on;document.getElementById('webOn').hidden=!on;
+  document.getElementById('webStatus').textContent=on?'✅ Delete mode is ON for this phone. In the gallery, tap 🗑️ on any photo to remove it.':'Turn on delete mode for this phone. Your key stays on this phone only and is never put on the website.';
+  hide('webErr');}
+document.getElementById('webSave').onclick=async()=>{
+  const k=val('apiKey'),s=val('apiSecret'),btn=document.getElementById('webSave');hide('webErr');
+  if(!k||!s)return show('webErr','Paste both the API Key and the API Secret.');
+  btn.disabled=true;btn.textContent='Checking…';
+  try{await destroy('webdazzled-key-check-'+Date.now(),{k,s}); // harmless: nothing has this name
+    try{localStorage.setItem(ADMIN_KEY,JSON.stringify({k,s}));}catch{throw new Error('This browser won\'t save settings (private mode?).');}
+    document.getElementById('apiKey').value='';document.getElementById('apiSecret').value='';
+    syncAdmin();galleryCache=null;renderWebers();
+  }catch(e){show('webErr',"That didn't work: "+e.message+'. Double-check the key and secret.');}
+  finally{btn.disabled=false;btn.textContent='Turn on delete mode';}
+};
+document.getElementById('webOff').onclick=()=>{try{localStorage.removeItem(ADMIN_KEY);}catch{}syncAdmin();renderWebers();};
+syncAdmin();
+
 loadRecent();flushQueue();
 const startView=(location.hash||'').slice(1);
-if(['upload','gallery'].includes(startView)) go(startView);
+if(['upload','gallery','webers'].includes(startView)) go(startView);
+window.addEventListener('hashchange',()=>{const v=location.hash.slice(1);if(['home','upload','gallery','webers'].includes(v))go(v);});
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
