@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Webdazzled Ducks</title>
+<meta name="description" content="You found a Webdazzled Duck! Snap a photo and add it to the Weber family's sparkly flock.">
+<meta name="theme-color" content="#140a1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:title" content="Webdazzled Ducks · The Family Collective">
+<meta property="og:description" content="You found a bedazzled duck! Snap a photo and upload it.">
+<meta property="og:image" content="hero.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦆</text></svg>">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#140a1f; --bg2:#1f1030; --card:#271538; --card2:#33204a;
+  --ink:#fff7fb; --ink2:#d9c6e6; --muted:#a58fb8;
+  --pink:#ff3ea5; --pink2:#ff8fcf; --gold:#f7c95a; --gold2:#ffe7a3; --beak:#ff7a1a;
+  --line:rgba(255,255,255,.12);
+  --radius:22px;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+  --nav-h:76px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:Nunito,system-ui,-apple-system,sans-serif;color:var(--ink);
+  background:var(--bg);
+  background-image:
+    radial-gradient(900px 500px at 85% -10%,rgba(255,62,165,.28),transparent 60%),
+    radial-gradient(700px 500px at -10% 30%,rgba(247,201,90,.16),transparent 60%),
+    radial-gradient(800px 600px at 50% 120%,rgba(120,80,255,.18),transparent 60%);
+  background-attachment:fixed;
+  min-height:100vh;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px);
+}
+.sparkles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.sparkles i{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;opacity:0;
+  box-shadow:0 0 8px 2px rgba(255,255,255,.8);animation:twinkle 4s infinite}
+@keyframes twinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:.9;transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.sparkles i{animation:none;opacity:.35}}
+main{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:0 16px}
+h1,h2,h3{font-family:Fredoka,Nunito,sans-serif;letter-spacing:.2px;line-height:1.1}
+.view{display:none;animation:fade .35s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* top bar */
+.topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:10px;
+  padding:calc(10px + env(safe-area-inset-top)) 16px 10px;max-width:560px;margin:0 auto;
+  background:linear-gradient(var(--bg) 70%,transparent)}
+.logo{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:22px;
+  background:linear-gradient(135deg,var(--pink),var(--gold));box-shadow:0 0 18px rgba(255,62,165,.5)}
+.brand{font-family:Fredoka;font-weight:700;font-size:19px}
+.brand small{display:block;font-family:Nunito;font-weight:700;font-size:11px;color:var(--gold);letter-spacing:1.6px;text-transform:uppercase}
+.count-pill{margin-left:auto;font-size:12px;font-weight:800;padding:7px 11px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--gold2);white-space:nowrap}
+
+/* hero */
+.hero{position:relative;border-radius:28px;overflow:hidden;margin-top:6px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.hero img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(20,10,31,.95))}
+.hero-copy{position:absolute;left:0;right:0;bottom:0;padding:20px;z-index:2}
+.eyebrow{display:inline-block;font-size:11px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--bg);background:var(--gold);padding:5px 10px;border-radius:999px;margin-bottom:10px}
+.hero h1{font-size:clamp(32px,9vw,44px);
+  background:linear-gradient(90deg,#fff,var(--gold2) 40%,var(--pink2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--ink2);margin-top:6px;font-size:15px}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;cursor:pointer;
+  font-family:Fredoka;font-weight:600;font-size:19px;color:#fff;padding:17px 20px;border-radius:18px;
+  background:linear-gradient(135deg,var(--pink),#ff6a7a 55%,var(--beak));
+  box-shadow:0 10px 24px rgba(255,62,165,.4),inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .15s ease}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--card);box-shadow:none;border:1px solid var(--line);font-size:16px}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.cta-wrap{margin:16px 0 8px}
+
+.card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:14px 0;box-shadow:var(--shadow)}
+.card h2{font-size:22px;margin-bottom:8px}
+.card p{color:var(--ink2)}
+.note{font-size:14px;color:var(--muted)}
+.welcome{font-size:16px;line-height:1.55}
+.welcome strong{color:var(--gold2)}
+
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.step{background:var(--card2);border-radius:16px;padding:14px;border:1px solid var(--line)}
+.step .n{font-size:26px}
+.step b{display:block;font-family:Fredoka;font-weight:600;font-size:17px;margin-top:4px}
+.step span{font-size:13px;color:var(--ink2)}
+
+.keephide{display:flex;gap:10px;margin-top:12px}
+.keephide div{flex:1;text-align:center;padding:12px;border-radius:16px;font-family:Fredoka;font-weight:600}
+.keep{background:rgba(255,62,165,.15);color:var(--pink2);border:1px solid rgba(255,62,165,.35)}
+.hide{background:rgba(247,201,90,.12);color:var(--gold2);border:1px solid rgba(247,201,90,.35)}
+
+.tagline{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card2);border-radius:14px;padding:12px 14px;margin-top:10px;border:1px dashed rgba(247,201,90,.5)}
+.tagline code{font-family:Fredoka;font-size:18px;color:var(--gold2)}
+.chip{font:inherit;font-size:13px;font-weight:800;border:0;border-radius:999px;padding:8px 12px;background:var(--gold);color:var(--bg);cursor:pointer}
+
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.strip img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;display:block;background:var(--card2)}
+
+/* upload */
+.upload-head h1{font-size:30px;margin:6px 0 4px}
+.drop{position:relative;display:grid;place-items:center;text-align:center;min-height:260px;border-radius:24px;
+  border:2px dashed rgba(255,143,207,.55);background:rgba(255,62,165,.06);overflow:hidden;cursor:pointer;margin-top:12px}
+.drop .big{font-size:56px}
+.drop b{display:block;font-family:Fredoka;font-size:20px;margin-top:6px}
+.drop span{color:var(--ink2);font-size:14px}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.change{position:absolute;right:10px;bottom:10px;z-index:2;font-size:12px;font-weight:800;background:rgba(0,0,0,.6);padding:7px 11px;border-radius:999px;pointer-events:none}
+label.f{display:block;margin-top:14px;font-weight:800;font-size:14px;color:var(--ink2)}
+label.f small{font-weight:600;color:var(--muted)}
+input.t,textarea.t{width:100%;margin-top:6px;font:inherit;font-size:16px;color:var(--ink);background:var(--card2);
+  border:1px solid var(--line);border-radius:14px;padding:13px 14px;outline:none}
+input.t:focus,textarea.t:focus{border-color:var(--pink2);box-shadow:0 0 0 3px rgba(255,62,165,.25)}
+textarea.t{min-height:84px;resize:vertical}
+.choice{display:flex;gap:10px;margin-top:6px}
+.choice label{flex:1;cursor:pointer}
+.choice input{position:absolute;opacity:0}
+.choice span{display:block;text-align:center;padding:13px;border-radius:14px;background:var(--card2);border:1px solid var(--line);font-family:Fredoka;font-weight:600}
+.choice input:checked + span{background:linear-gradient(135deg,rgba(255,62,165,.35),rgba(247,201,90,.25));border-color:var(--pink2)}
+.choice input:focus-visible + span{outline:2px solid var(--gold)}
+.consent{display:flex;gap:10px;align-items:flex-start;margin-top:14px;font-size:13px;color:var(--ink2)}
+.consent input{margin-top:3px;width:18px;height:18px;accent-color:var(--pink)}
+.progress{height:8px;border-radius:99px;background:var(--card2);overflow:hidden;margin-top:12px;display:none}
+.progress div{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--gold));transition:width .2s}
+
+.banner{display:none;margin:10px 0;padding:12px 14px;border-radius:14px;font-size:14px;font-weight:700}
+.banner.show{display:block}
+.banner.warn{background:rgba(247,201,90,.14);border:1px solid rgba(247,201,90,.4);color:var(--gold2)}
+.banner.err{background:rgba(255,80,80,.14);border:1px solid rgba(255,80,80,.4);color:#ffc2c2}
+
+/* success */
+.success{text-align:center;padding:26px 18px}
+.success .big{font-size:70px;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-6deg)}}
+.success h2{font-size:30px;margin:8px 0}
+
+/* gallery */
+.gal-head{display:flex;align-items:end;justify-content:space-between;margin:8px 0 4px}
+.gal-head h1{font-size:30px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.tile{position:relative;border-radius:18px;overflow:hidden;background:var(--card2);border:1px solid var(--line);cursor:pointer;padding:0;color:inherit;font:inherit;text-align:left}
+.tile img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover}
+.tile .cap{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;font-size:12px;font-weight:800;
+  background:linear-gradient(transparent,rgba(0,0,0,.75))}
+.tile .cap small{display:block;font-weight:600;color:var(--ink2)}
+.empty{text-align:center;padding:34px 16px;color:var(--ink2)}
+.empty .big{font-size:50px}
+.skel{aspect-ratio:1/1;border-radius:18px;background:linear-gradient(90deg,var(--card) 0,var(--card2) 50%,var(--card) 100%);background-size:200% 100%;animation:sh 1.4s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+
+dialog{border:0;padding:0;background:transparent;max-width:min(560px,94vw);width:100%;color:var(--ink)}
+dialog::backdrop{background:rgba(10,4,18,.85);backdrop-filter:blur(4px)}
+.lb{background:var(--card);border-radius:22px;overflow:hidden;border:1px solid var(--line)}
+.lb img{display:block;width:100%;max-height:70vh;object-fit:contain;background:#000}
+.lb .meta{padding:14px 16px}
+.lb .meta b{font-family:Fredoka;font-size:18px}
+.lb .meta p{color:var(--ink2);font-size:14px;margin-top:4px}
+.lb .x{position:absolute;top:10px;right:10px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:20px;cursor:pointer}
+
+/* bottom nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:8px 16px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(20,10,31,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.tabs-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:1fr 1.2fr 1fr;align-items:end}
+.tab{background:none;border:0;color:var(--muted);font:inherit;font-size:11px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;cursor:pointer}
+.tab .ic{font-size:22px;filter:grayscale(.7)}
+.tab.active{color:var(--ink)}
+.tab.active .ic{filter:none}
+.tab.fab .ic{width:60px;height:60px;border-radius:20px;display:grid;place-items:center;font-size:28px;margin-top:-26px;filter:none;
+  background:linear-gradient(135deg,var(--pink),var(--beak));box-shadow:0 8px 22px rgba(255,62,165,.55);border:3px solid var(--bg)}
+footer{text-align:center;font-size:12px;color:var(--muted);margin:22px 0 6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<div class="sparkles" id="sparkles" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="logo" aria-hidden="true">🦆</div>
+  <div class="brand">Webdazzled Ducks<small>The Family Collective</small></div>
+  <div class="count-pill" id="countPill">✨ The flock</div>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section class="view active" id="view-home" aria-labelledby="h-home">
+    <div class="hero">
+      <img src="hero.jpg" alt="A sparkling bedazzled duck with a pink bow and sunglasses">
+      <div class="hero-copy">
+        <span class="eyebrow">ConQUACKulations!</span>
+        <h1 id="h-home">You found a Webdazzled Duck!</h1>
+        <p>Keep it or hide it again. You decide!</p>
+      </div>
+    </div>
+
+    <div class="cta-wrap">
+      <button class="btn" data-go="upload">📸 I found a duck! Add my photo</button>
+    </div>
+
+    <div class="card">
+      <p class="welcome">We're <strong>the Weber family</strong> from Phoenix, Arizona, and we hope you enjoy our bedazzled duck! Snap a photo with it and upload it here to join the flock.</p>
+    </div>
+
+    <div class="card">
+      <h2>How to play</h2>
+      <div class="steps">
+        <div class="step"><div class="n">🔍</div><b>Find</b><span>Spot a sparkly duck hiding around the ship.</span></div>
+        <div class="step"><div class="n">🤳</div><b>Snap</b><span>Take a photo with your new feathered friend.</span></div>
+        <div class="step"><div class="n">⬆️</div><b>Upload</b><span>Add it here so the whole ship can see.</span></div>
+        <div class="step"><div class="n">🎁</div><b>Decide</b><span>Keep it as a souvenir, or hide it for the next lucky finder.</span></div>
+      </div>
+      <div class="keephide"><div class="keep">💖 Keep it</div><div class="hide">🙈 Hide it</div></div>
+    </div>
+
+    <div class="card">
+      <h2>No signal at sea?</h2>
+      <p>Ship Wi-Fi can be spotty. Take your photo now and upload it when you're back online. Or post it with our hashtag:</p>
+      <div class="tagline"><code>#WebdazzledDucks</code><button class="chip" id="copyTag">Copy</button></div>
+    </div>
+
+    <div class="card" id="recentCard" hidden>
+      <h2>Latest finds</h2>
+      <div class="strip" id="recentStrip"></div>
+      <div class="cta-wrap"><button class="btn ghost" data-go="gallery">See the whole flock →</button></div>
+    </div>
+
+    <footer>Made with sparkle by the Weber family · Phoenix, Arizona</footer>
+  </section>
+
+  <!-- UPLOAD -->
+  <section class="view" id="view-upload" aria-labelledby="h-up">
+    <div class="upload-head">
+      <h1 id="h-up">Add your duck photo</h1>
+      <p class="note">Your photo shows up in the flock gallery once the Webers give it a quick look.</p>
+    </div>
+    <div class="banner warn" id="queueBanner"></div>
+    <div class="banner err" id="errBanner"></div>
+
+    <form id="upForm" novalidate>
+      <div class="drop" id="drop">
+        <div id="dropEmpty"><div class="big">📷</div><b>Tap to take or choose a photo</b><span>A selfie with the duck is perfect</span></div>
+        <input type="file" id="photo" accept="image/*" aria-label="Choose a photo">
+      </div>
+
+      <label class="f" for="finder">Your first name <small>(optional)</small></label>
+      <input class="t" id="finder" maxlength="40" autocomplete="given-name" placeholder="e.g. Maria">
+
+      <label class="f" for="from">Where you're from <small>(optional)</small></label>
+      <input class="t" id="from" maxlength="60" placeholder="e.g. Austin, Texas">
+
+      <label class="f" for="spot">Where you found it <small>(optional)</small></label>
+      <input class="t" id="spot" maxlength="60" placeholder="e.g. Pool deck, Deck 11">
+
+      <label class="f">Keep or hide?</label>
+      <div class="choice" role="radiogroup">
+        <label><input type="radio" name="kh" value="Keeping it" checked><span>💖 Keeping it</span></label>
+        <label><input type="radio" name="kh" value="Hiding it again"><span>🙈 Hiding it</span></label>
+      </div>
+
+      <label class="f" for="msg">Note for the Webers <small>(optional)</small></label>
+      <textarea class="t" id="msg" maxlength="200" placeholder="Say hi!"></textarea>
+
+      <label class="consent"><input type="checkbox" id="ok"> <span>I'm OK with this photo being shown in the public gallery. (Parents: please share photos of kids only if you're comfortable.)</span></label>
+
+      <div class="progress" id="prog"><div></div></div>
+      <div class="cta-wrap"><button class="btn" id="submitBtn" type="submit">✨ Upload my photo</button></div>
+    </form>
+  </section>
+
+  <!-- SUCCESS -->
+  <section class="view" id="view-done" aria-labelledby="h-done">
+    <div class="card success">
+      <div class="big">🦆</div>
+      <h2 id="h-done">Quack-tastic!</h2>
+      <p id="doneMsg">Your photo is in! It will appear in the gallery soon.</p>
+      <div class="cta-wrap"><button class="btn" id="shareBtn">📣 Share my find</button></div>
+      <button class="btn ghost" data-go="gallery">See the flock</button>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="view" id="view-gallery" aria-labelledby="h-gal">
+    <div class="gal-head"><h1 id="h-gal">The Flock</h1><span class="note" id="galCount"></span></div>
+    <p class="note">Every sparkly sighting from around the ship.</p>
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<dialog id="lb"><div class="lb" style="position:relative"><button class="x" aria-label="Close" onclick="document.getElementById('lb').close()">✕</button><img id="lbImg" alt=""><div class="meta"><b id="lbTitle"></b><p id="lbText"></p></div></div></dialog>
+
+<nav class="tabs" aria-label="Main">
+  <div class="tabs-in">
+    <button class="tab active" data-go="home"><span class="ic">🏠</span>Home</button>
+    <button class="tab fab" data-go="upload"><span class="ic">📸</span>Found one!</button>
+    <button class="tab" data-go="gallery"><span class="ic">🖼️</span>The Flock</button>
+  </div>
+</nav>
+
+<script>
+/* ============ SETUP: fill these two in after creating your free Cloudinary account ============ */
+const CLOUD_NAME    = "";   // e.g. "dxyz123ab"  (Cloudinary Dashboard → Product Environment)
+const UPLOAD_PRESET = "";   // e.g. "webdazzled" (Settings → Upload → Upload presets, Signing mode: Unsigned)
+/* ============================================================================================== */
+const HASHTAG = "#WebdazzledDucks";
+const configured = !!(CLOUD_NAME && UPLOAD_PRESET);
+
+// sparkles
+(function(){const s=document.getElementById('sparkles');for(let i=0;i<26;i++){const e=document.createElement('i');
+e.style.left=Math.random()*100+'%';e.style.top=Math.random()*100+'%';e.style.animationDelay=(Math.random()*4)+'s';
+const z=2+Math.random()*3;e.style.width=e.style.height=z+'px';s.appendChild(e);}})();
+
+// navigation
+function go(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+v));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.go===v));
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(v==='gallery') loadGallery();
+  if(location.hash!=='#'+v) history.replaceState(null,'','#'+v);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go);}});
+const startView=(location.hash||'').slice(1);
+if(['upload','gallery'].includes(startView)) go(startView);
+
+// copy hashtag
+document.getElementById('copyTag').onclick=async e=>{
+  try{await navigator.clipboard.writeText(HASHTAG);e.target.textContent='Copied!';}catch{e.target.textContent=HASHTAG;}
+  setTimeout(()=>e.target.textContent='Copy',1800);
+};
+
+// ---------- photo pick + compress ----------
+let picked=null;
+const photo=document.getElementById('photo'), drop=document.getElementById('drop');
+photo.addEventListener('change',async()=>{
+  const f=photo.files&&photo.files[0]; if(!f) return;
+  hide('errBanner');
+  try{ picked=await compress(f,1600,0.82); }catch{ picked=f; }
+  const url=URL.createObjectURL(picked);
+  drop.querySelectorAll('img,.change').forEach(n=>n.remove());
+  document.getElementById('dropEmpty').style.display='none';
+  const im=document.createElement('img');im.src=url;im.alt='Your photo preview';drop.insertBefore(im,photo);
+  const c=document.createElement('div');c.className='change';c.textContent='Tap to change';drop.appendChild(c);
+});
+function compress(file,max,q){
+  return new Promise((res,rej)=>{
+    const img=new Image();img.onload=()=>{
+      let {width:w,height:h}=img; const r=Math.min(1,max/Math.max(w,h)); w=Math.round(w*r); h=Math.round(h*r);
+      const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);
+      cv.toBlob(b=>b?res(b):rej(),'image/jpeg',q); URL.revokeObjectURL(img.src);
+    };img.onerror=rej;img.src=URL.createObjectURL(file);
+  });
+}
+
+// ---------- offline queue (IndexedDB) ----------
+const DB='wd-ducks',STORE='queue';
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE,{keyPath:'id',autoIncrement:true});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function qAdd(item){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction(STORE,'readwrite');t.objectStore(STORE).add(item);t.oncomplete=res;t.onerror=()=>rej(t.error);});}
+async function qAll(){const d=await idb();return new Promise((res,rej)=>{const r=d.transaction(STORE).objectStore(STORE).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});}
+async function qDel(id){const d=await idb();return new Promise(res=>{const t=d.transaction(STORE,'readwrite');t.objectStore(STORE).delete(id);t.oncomplete=res;});}
+async function refreshQueueBanner(){
+  try{const items=await qAll();const b=document.getElementById('queueBanner');
+    if(items.length){b.textContent=`📶 ${items.length} photo${items.length>1?'s':''} saved on this phone. ${navigator.onLine?'Uploading now…':"We'll upload automatically when you're back online. Keep this page open or reopen it later."}`;b.classList.add('show');}
+    else b.classList.remove('show');}catch{}
+}
+async function flushQueue(){
+  if(!configured||!navigator.onLine) return refreshQueueBanner();
+  let items=[];try{items=await qAll();}catch{return;}
+  for(const it of items){try{await upload(it.blob,it.meta);await qDel(it.id);}catch{break;}}
+  refreshQueueBanner();
+}
+window.addEventListener('online',flushQueue);
+
+// ---------- upload ----------
+function esc(v){return String(v||'').replace(/[|=]/g,m=>'\\'+m).trim();}
+function upload(blob,meta,onProg){
+  return new Promise((res,rej)=>{
+    const fd=new FormData();
+    fd.append('file',blob,'duck.jpg');
+    fd.append('upload_preset',UPLOAD_PRESET);
+    fd.append('tags','pending,webdazzled');
+    fd.append('context',Object.entries(meta).map(([k,v])=>`${k}=${esc(v)}`).join('|'));
+    const x=new XMLHttpRequest();x.open('POST',`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`);
+    x.upload.onprogress=e=>{if(onProg&&e.lengthComputable)onProg(e.loaded/e.total);};
+    x.onload=()=>x.status<300?res(JSON.parse(x.responseText)):rej(new Error('upload '+x.status));
+    x.onerror=()=>rej(new Error('network'));x.send(fd);
+  });
+}
+const show=(id,t)=>{const b=document.getElementById(id);if(t)b.textContent=t;b.classList.add('show');};
+const hide=id=>document.getElementById(id).classList.remove('show');
+
+document.getElementById('upForm').addEventListener('submit',async e=>{
+  e.preventDefault();hide('errBanner');
+  if(!configured) return show('errBanner',"Uploads open soon! For now, post your photo with "+HASHTAG+" 🦆");
+  if(!picked) return show('errBanner','Add a photo first. Tap the camera box above.');
+  if(!document.getElementById('ok').checked) return show('errBanner','Please tick the box so we can show your photo in the gallery.');
+  const meta={finder:val('finder'),from:val('from'),spot:val('spot'),keephide:document.querySelector('input[name=kh]:checked').value,msg:val('msg')};
+  const btn=document.getElementById('submitBtn'),prog=document.getElementById('prog');
+  btn.disabled=true;btn.textContent='Uploading…';prog.style.display='block';
+  try{
+    if(!navigator.onLine) throw new Error('offline');
+    await upload(picked,meta,p=>prog.firstElementChild.style.width=(p*100)+'%');
+    finish(false,meta);
+  }catch(err){
+    try{await qAdd({blob:picked,meta,ts:Date.now()});finish(true,meta);}
+    catch{show('errBanner',"Couldn't upload right now. Try again in a bit, or post with "+HASHTAG);}
+  }finally{btn.disabled=false;btn.textContent='✨ Upload my photo';prog.style.display='none';prog.firstElementChild.style.width='0';}
+});
+const val=id=>document.getElementById(id).value.trim();
+function finish(queued,meta){
+  document.getElementById('doneMsg').textContent=queued
+    ? "No signal right now, so your photo is saved on this phone. It will upload automatically when you're back online."
+    : `Thanks${meta.finder?', '+meta.finder:''}! Your photo is in and will appear in the flock gallery soon.`;
+  document.getElementById('upForm').reset();picked=null;
+  drop.querySelectorAll('img,.change').forEach(n=>n.remove());document.getElementById('dropEmpty').style.display='';
+  refreshQueueBanner();go('done');
+}
+document.getElementById('shareBtn').onclick=async()=>{
+  const data={title:'Webdazzled Ducks',text:`I found a Webdazzled Duck! 🦆✨ ${HASHTAG}`,url:location.origin+location.pathname};
+  try{ if(navigator.share) await navigator.share(data); else {await navigator.clipboard.writeText(`${data.text} ${data.url}`);alert('Copied! Paste it anywhere.');} }catch{}
+};
+
+// ---------- gallery ----------
+let galleryCache=null;
+function imgUrl(r,w){return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_fill,g_auto,w_${w},h_${w},q_auto,f_auto/v${r.version}/${r.public_id}.${r.format}`;}
+function fullUrl(r){return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/c_limit,w_1400,q_auto,f_auto/v${r.version}/${r.public_id}.${r.format}`;}
+async function fetchApproved(){
+  if(!configured) return [];
+  if(galleryCache) return galleryCache;
+  const r=await fetch(`https://res.cloudinary.com/${CLOUD_NAME}/image/list/approved.json?t=${Math.floor(Date.now()/60000)}`);
+  if(r.status===404) return (galleryCache=[]);
+  if(!r.ok) throw new Error('list');
+  const j=await r.json();
+  return (galleryCache=(j.resources||[]).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)));
+}
+const ctx=r=>(r.context&&r.context.custom)||{};
+function caption(c){return [c.finder||'A lucky finder', c.from].filter(Boolean).join(' · ');}
+async function loadGallery(){
+  const g=document.getElementById('grid');
+  g.innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div>';
+  try{
+    const items=await fetchApproved();
+    document.getElementById('galCount').textContent=items.length?`${items.length} sighting${items.length>1?'s':''}`:'';
+    if(!items.length){g.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="big">🥚</div><p>No sightings yet. Be the first to add your duck photo!</p><div class="cta-wrap"><button class="btn" data-go="upload">📸 Add the first photo</button></div></div>`;return;}
+    g.innerHTML='';
+    items.forEach(r=>{const c=ctx(r);const b=document.createElement('button');b.className='tile';b.type='button';
+      const im=document.createElement('img');im.loading='lazy';im.src=imgUrl(r,500);im.alt='Duck sighting photo';
+      const cap=document.createElement('div');cap.className='cap';cap.textContent=caption(c);
+      if(c.spot){const s=document.createElement('small');s.textContent='📍 '+c.spot;cap.appendChild(s);}
+      b.append(im,cap);b.onclick=()=>openLb(r);g.appendChild(b);});
+  }catch{g.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="big">📶</div><p>Can\'t reach the gallery right now. Check your connection and try again.</p></div>';}
+}
+function openLb(r){const c=ctx(r);
+  document.getElementById('lbImg').src=fullUrl(r);
+  document.getElementById('lbTitle').textContent=caption(c);
+  document.getElementById('lbText').textContent=[c.spot&&('📍 '+c.spot),c.keephide&&('🦆 '+c.keephide),c.msg&&('"'+c.msg+'"')].filter(Boolean).join('  ·  ');
+  document.getElementById('lb').showModal();}
+
+async function loadRecent(){
+  try{const items=await fetchApproved();if(!items.length)return;
+    document.getElementById('countPill').textContent=`✨ ${items.length} found`;
+    const s=document.getElementById('recentStrip');s.innerHTML='';
+    items.slice(0,6).forEach(r=>{const im=document.createElement('img');im.src=imgUrl(r,300);im.alt='Recent duck sighting';im.loading='lazy';s.appendChild(im);});
+    document.getElementById('recentCard').hidden=false;}catch{}
+}
+
+loadRecent();flushQueue();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
