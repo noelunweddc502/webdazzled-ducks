@@ -327,8 +327,6 @@ function go(v){
   if(location.hash!=='#'+v) history.replaceState(null,'','#'+v);
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go);}});
-const startView=(location.hash||'').slice(1);
-if(['upload','gallery'].includes(startView)) go(startView);
 
 // copy hashtag
 document.getElementById('copyTag').onclick=async e=>{
@@ -472,6 +470,8 @@ async function loadRecent(){
 }
 
 loadRecent();flushQueue();
+const startView=(location.hash||'').slice(1);
+if(['upload','gallery'].includes(startView)) go(startView);
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
