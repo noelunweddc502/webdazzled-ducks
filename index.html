@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Webdazzled Ducks</title>
+<title>Webdazzled</title>
 <meta name="description" content="You found a Webdazzled Duck! Snap a photo and add it to the Weber family's sparkly flock.">
 <meta name="theme-color" content="#140a1f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta property="og:title" content="Webdazzled Ducks · The Family Collective">
+<meta property="og:title" content="Webdazzled · The Family Collective">
 <meta property="og:description" content="You found a bedazzled duck! Snap a photo and upload it.">
 <meta property="og:image" content="hero.jpg">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦆</text></svg>">
@@ -197,7 +197,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin:22px 0 6px}
 
 <header class="topbar">
   <div class="logo" aria-hidden="true">🦆</div>
-  <div class="brand">Webdazzled Ducks<small>The Family Collective</small></div>
+  <div class="brand">Webdazzled<small>The Family Collective</small></div>
   <div class="count-pill" id="countPill">✨ The flock</div>
 </header>
 
@@ -454,7 +454,7 @@ function finish(queued,meta){
   refreshQueueBanner();go('done');
 }
 document.getElementById('shareBtn').onclick=async()=>{
-  const data={title:'Webdazzled Ducks',text:`I found a Webdazzled Duck! 🦆✨ ${HASHTAG}`,url:location.origin+location.pathname};
+  const data={title:'Webdazzled',text:`I found a Webdazzled Duck! 🦆✨ ${HASHTAG}`,url:location.origin+location.pathname};
   try{ if(navigator.share) await navigator.share(data); else {await navigator.clipboard.writeText(`${data.text} ${data.url}`);alert('Copied! Paste it anywhere.');} }catch{}
 };
 
