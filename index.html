@@ -240,7 +240,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin:22px 0 6px}
   <section class="view" id="view-upload" aria-labelledby="h-up">
     <div class="upload-head">
       <h1 id="h-up">Add your duck photo</h1>
-      <p class="note">Your photo shows up in the flock gallery once the Webers give it a quick look.</p>
+      <p class="note">Your photo goes straight into the flock gallery for everyone to see.</p>
     </div>
     <div class="banner warn" id="queueBanner"></div>
     <div class="banner err" id="errBanner"></div>
@@ -281,7 +281,7 @@ footer{text-align:center;font-size:12px;color:var(--muted);margin:22px 0 6px}
     <div class="card success">
       <div class="big">🦆</div>
       <h2 id="h-done">Quack-tastic!</h2>
-      <p id="doneMsg">Your photo is in! It will appear in the gallery soon.</p>
+      <p id="doneMsg">Your photo is in the flock gallery!</p>
       <div class="cta-wrap"><button class="btn" id="shareBtn">📣 Share my find</button></div>
       <button class="btn ghost" data-go="gallery">See the flock</button>
     </div>
@@ -385,7 +385,7 @@ function upload(blob,meta,onProg){
     const fd=new FormData();
     fd.append('file',blob,'duck.jpg');
     fd.append('upload_preset',UPLOAD_PRESET);
-    fd.append('tags','pending,webdazzled');
+    fd.append('tags','approved,webdazzled');
     fd.append('context',Object.entries(meta).map(([k,v])=>`${k}=${esc(v)}`).join('|'));
     const x=new XMLHttpRequest();x.open('POST',`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`);
     x.upload.onprogress=e=>{if(onProg&&e.lengthComputable)onProg(e.loaded/e.total);};
@@ -417,7 +417,7 @@ const val=id=>document.getElementById(id).value.trim();
 function finish(queued,meta){
   document.getElementById('doneMsg').textContent=queued
     ? "No signal right now, so your photo is saved on this phone. It will upload automatically when you're back online."
-    : `Thanks${meta.finder?', '+meta.finder:''}! Your photo is in and will appear in the flock gallery soon.`;
+    : `Thanks${meta.finder?', '+meta.finder:''}! Your photo is in the flock gallery now (it can take a minute to show up).`;
   document.getElementById('upForm').reset();picked=null;
   drop.querySelectorAll('img,.change').forEach(n=>n.remove());document.getElementById('dropEmpty').style.display='';
   refreshQueueBanner();go('done');

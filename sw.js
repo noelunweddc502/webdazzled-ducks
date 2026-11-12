@@ -1,5 +1,5 @@
 // Caches the site so it opens again even with weak ship Wi-Fi after the first visit.
-const C='wd-ducks-v2', SHELL=['./','index.html','hero.jpg','manifest.webmanifest'];
+const C='wd-ducks-v3', SHELL=['./','index.html','hero.jpg','manifest.webmanifest'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(SHELL)));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))));self.clients.claim();});
 self.addEventListener('fetch',e=>{
